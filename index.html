@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aim Trainer - Тренажер реакции</title>
+    <link rel="icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACgAAAev/aR1V4AAAAABJRU5ErkJggg==" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -19,17 +19,17 @@
             color: #fff;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
-            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
+            max-width: 500px;
         }
 
         header {
@@ -54,56 +54,26 @@
             margin-bottom: 20px;
         }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px 0;
-            text-align: center;
-            background: rgba(40, 40, 40, 0.8);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, #4d79ff, #3366ff);
-            box-shadow: 0 4px 15px rgba(77, 121, 255, 0.4);
-        }
-
-        .tab-content {
-            width: 100%;
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
         .game-controls {
             background: rgba(40, 40, 40, 0.8);
             border-radius: 15px;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 30px;
             width: 100%;
-            max-width: 600px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .time-selection {
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            width: 100%;
         }
 
         .time-option {
@@ -111,6 +81,8 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            flex: 1;
+            justify-content: center;
         }
 
         .time-option input {
@@ -118,11 +90,13 @@
         }
 
         .time-label {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background: rgba(60, 60, 60, 0.7);
             border-radius: 10px;
             transition: all 0.3s ease;
             font-weight: 500;
+            width: 100%;
+            text-align: center;
         }
 
         .time-option input:checked + .time-label {
@@ -133,12 +107,14 @@
         .stats {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             font-size: 1.2rem;
+            width: 100%;
         }
 
         .stat {
             text-align: center;
+            flex: 1;
         }
 
         .stat-value {
@@ -152,6 +128,7 @@
             display: flex;
             justify-content: center;
             gap: 15px;
+            width: 100%;
         }
 
         button {
@@ -165,6 +142,7 @@
             background: linear-gradient(135deg, #4d79ff, #3366ff);
             color: white;
             box-shadow: 0 4px 15px rgba(77, 121, 255, 0.4);
+            flex: 1;
         }
 
         button:hover {
@@ -197,7 +175,7 @@
         .game-area {
             position: relative;
             width: 100%;
-            height: 500px;
+            height: 400px;
             background: rgba(25, 25, 25, 0.9);
             border-radius: 15px;
             overflow: hidden;
@@ -219,9 +197,9 @@
         .instructions {
             margin-top: 30px;
             text-align: center;
-            max-width: 600px;
             color: #aaa;
             line-height: 1.6;
+            width: 100%;
         }
 
         .game-over {
@@ -247,111 +225,14 @@
         }
 
         .game-over h2 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 20px;
             color: #ff4d4d;
         }
 
         .final-score {
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 30px;
-        }
-
-        /* Стили для статистики */
-        .stats-container {
-            background: rgba(40, 40, 40, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            width: 100%;
-            max-width: 1000px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: rgba(50, 50, 50, 0.7);
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: #ccc;
-        }
-
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #4d79ff;
-        }
-
-        .stat-card .sub-value {
-            font-size: 1rem;
-            color: #aaa;
-            margin-top: 5px;
-        }
-
-        .charts-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .chart-wrapper {
-            background: rgba(50, 50, 50, 0.7);
-            border-radius: 10px;
-            padding: 20px;
-        }
-
-        .chart-title {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            color: #fff;
-        }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .history-table th, .history-table td {
-            padding: 12px 15px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .history-table th {
-            background: rgba(60, 60, 60, 0.8);
-            color: #4d79ff;
-            font-weight: 500;
-        }
-
-        .history-table tr:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .clear-stats {
-            margin-top: 20px;
-            background: linear-gradient(135deg, #ff4d4d, #ff3333);
         }
 
         @media (max-width: 768px) {
@@ -360,19 +241,21 @@
             }
             
             .game-area {
-                height: 400px;
+                height: 350px;
             }
             
             .time-selection {
                 flex-wrap: wrap;
             }
             
-            .charts-container {
-                grid-template-columns: 1fr;
+            .time-option {
+                flex: 0 0 calc(50% - 10px);
             }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: 480px) {
+            .time-option {
+                flex: 0 0 100%;
             }
         }
     </style>
@@ -384,114 +267,51 @@
             <p class="subtitle">Тренажер для развития скорости реакции и точности</p>
         </header>
         
-        <div class="tabs">
-            <div class="tab active" data-tab="game">Игра</div>
-            <div class="tab" data-tab="stats">Статистика</div>
-        </div>
-        
-        <div class="tab-content active" id="game-tab">
-            <div class="game-controls">
-                <div class="time-selection">
-                    <div class="time-option">
-                        <input type="radio" id="time10" name="gameTime" value="10" checked>
-                        <label for="time10" class="time-label">10 секунд</label>
-                    </div>
-                    <div class="time-option">
-                        <input type="radio" id="time30" name="gameTime" value="30">
-                        <label for="time30" class="time-label">30 секунд</label>
-                    </div>
-                    <div class="time-option">
-                        <input type="radio" id="time60" name="gameTime" value="60">
-                        <label for="time60" class="time-label">60 секунд</label>
-                    </div>
+        <div class="game-controls">
+            <div class="time-selection">
+                <div class="time-option">
+                    <input type="radio" id="time10" name="gameTime" value="10" checked>
+                    <label for="time10" class="time-label">10 секунд</label>
                 </div>
-                
-                <div class="stats">
-                    <div class="stat">
-                        <div>Таймер</div>
-                        <div id="timer" class="stat-value">00</div>
-                    </div>
-                    <div class="stat">
-                        <div>Счет</div>
-                        <div id="score" class="stat-value">0</div>
-                    </div>
+                <div class="time-option">
+                    <input type="radio" id="time30" name="gameTime" value="30">
+                    <label for="time30" class="time-label">30 секунд</label>
                 </div>
-                
-                <div class="buttons">
-                    <button id="startBtn">Старт</button>
-                    <button id="resetBtn">Сброс</button>
+                <div class="time-option">
+                    <input type="radio" id="time60" name="gameTime" value="60">
+                    <label for="time60" class="time-label">60 секунд</label>
                 </div>
             </div>
             
-            <div class="game-area" id="gameArea">
-                <!-- Цели будут добавляться здесь динамически -->
-                <div class="game-over" id="gameOver">
-                    <h2>Игра окончена!</h2>
-                    <div class="final-score">Ваш счет: <span id="finalScore">0</span></div>
-                    <button id="restartBtn">Играть снова</button>
+            <div class="stats">
+                <div class="stat">
+                    <div>Таймер</div>
+                    <div id="timer" class="stat-value">00</div>
+                </div>
+                <div class="stat">
+                    <div>Счет</div>
+                    <div id="score" class="stat-value">0</div>
                 </div>
             </div>
             
-            <div class="instructions">
-                <p>Кликните на как можно больше красных кружков за отведенное время.</p>
-                <p>Кружки постоянно двигаются и отскакивают от границ экрана.</p>
+            <div class="buttons">
+                <button id="startBtn">Старт</button>
+                <button id="resetBtn">Сброс</button>
             </div>
         </div>
         
-        <div class="tab-content" id="stats-tab">
-            <div class="stats-container">
-                <h2 style="text-align: center; margin-bottom: 20px;">Статистика игр</h2>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Всего игр</h3>
-                        <div class="value" id="totalGames">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Лучший счет</h3>
-                        <div class="value" id="bestScore">0</div>
-                        <div class="sub-value" id="bestScoreTime">-</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Средний счет</h3>
-                        <div class="value" id="averageScore">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Точность</h3>
-                        <div class="value" id="accuracy">0%</div>
-                    </div>
-                </div>
-                
-                <div class="charts-container">
-                    <div class="chart-wrapper">
-                        <div class="chart-title">Прогресс по играм</div>
-                        <canvas id="progressChart"></canvas>
-                    </div>
-                    <div class="chart-wrapper">
-                        <div class="chart-title">Распределение по времени</div>
-                        <canvas id="timeChart"></canvas>
-                    </div>
-                </div>
-                
-                <h3 style="margin-top: 30px;">История игр</h3>
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>Дата</th>
-                            <th>Время</th>
-                            <th>Счет</th>
-                            <th>Точность</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyTableBody">
-                        <!-- Данные будут добавляться динамически -->
-                    </tbody>
-                </table>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                    <button id="clearStatsBtn" class="clear-stats">Очистить статистику</button>
-                </div>
+        <div class="game-area" id="gameArea">
+            <!-- Цели будут добавляться здесь динамически -->
+            <div class="game-over" id="gameOver">
+                <h2>Игра окончена!</h2>
+                <div class="final-score">Ваш счет: <span id="finalScore">0</span></div>
+                <button id="restartBtn">Играть снова</button>
             </div>
+        </div>
+        
+        <div class="instructions">
+            <p>Кликните на как можно больше красных кружков за отведенное время.</p>
+            <p>Кружки постоянно двигаются и отскакивают от границ экрана.</p>
         </div>
     </div>
 
@@ -507,17 +327,6 @@
             const gameOverScreen = document.getElementById('gameOver');
             const finalScoreElement = document.getElementById('finalScore');
             const timeOptions = document.querySelectorAll('input[name="gameTime"]');
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            // Элементы статистики
-            const totalGamesElement = document.getElementById('totalGames');
-            const bestScoreElement = document.getElementById('bestScore');
-            const bestScoreTimeElement = document.getElementById('bestScoreTime');
-            const averageScoreElement = document.getElementById('averageScore');
-            const accuracyElement = document.getElementById('accuracy');
-            const historyTableBody = document.getElementById('historyTableBody');
-            const clearStatsBtn = document.getElementById('clearStatsBtn');
             
             // Переменные игры
             let gameActive = false;
@@ -526,199 +335,14 @@
             let gameTime = 10;
             let targets = [];
             let animationFrameId;
-            let totalClicks = 0;
-            let successfulClicks = 0;
+            let countdownInterval;
             
-            // Статистика
-            let gameStats = {
-                totalGames: 0,
-                bestScore: 0,
-                bestScoreTime: '',
-                totalScore: 0,
-                games: [],
-                accuracy: 0
-            };
-            
-            // Загрузка статистики из localStorage
-            function loadStats() {
-                const savedStats = localStorage.getItem('aimTrainerStats');
-                if (savedStats) {
-                    gameStats = JSON.parse(savedStats);
-                }
-                updateStatsDisplay();
-            }
-            
-            // Сохранение статистики в localStorage
-            function saveStats() {
-                localStorage.setItem('aimTrainerStats', JSON.stringify(gameStats));
-            }
-            
-            // Обновление отображения статистики
-            function updateStatsDisplay() {
-                totalGamesElement.textContent = gameStats.totalGames;
-                bestScoreElement.textContent = gameStats.bestScore;
-                bestScoreTimeElement.textContent = gameStats.bestScoreTime;
-                
-                const averageScore = gameStats.totalGames > 0 
-                    ? Math.round(gameStats.totalScore / gameStats.totalGames) 
-                    : 0;
-                averageScoreElement.textContent = averageScore;
-                
-                accuracyElement.textContent = gameStats.accuracy + '%';
-                
-                // Обновление таблицы истории
-                updateHistoryTable();
-                
-                // Обновление графиков
-                updateCharts();
-            }
-            
-            // Обновление таблицы истории
-            function updateHistoryTable() {
-                historyTableBody.innerHTML = '';
-                
-                // Показываем только последние 10 игр
-                const recentGames = gameStats.games.slice(-10).reverse();
-                
-                recentGames.forEach(game => {
-                    const row = document.createElement('tr');
-                    
-                    const dateCell = document.createElement('td');
-                    dateCell.textContent = game.date;
-                    
-                    const timeCell = document.createElement('td');
-                    timeCell.textContent = game.time + ' сек';
-                    
-                    const scoreCell = document.createElement('td');
-                    scoreCell.textContent = game.score;
-                    
-                    const accuracyCell = document.createElement('td');
-                    accuracyCell.textContent = game.accuracy + '%';
-                    
-                    row.appendChild(dateCell);
-                    row.appendChild(timeCell);
-                    row.appendChild(scoreCell);
-                    row.appendChild(accuracyCell);
-                    
-                    historyTableBody.appendChild(row);
-                });
-            }
-            
-            // Обновление графиков
-            function updateCharts() {
-                if (gameStats.games.length === 0) return;
-                
-                // График прогресса
-                const progressCtx = document.getElementById('progressChart').getContext('2d');
-                const progressLabels = gameStats.games.map((game, index) => `Игра ${index + 1}`);
-                const progressData = gameStats.games.map(game => game.score);
-                
-                if (window.progressChart) {
-                    window.progressChart.destroy();
-                }
-                
-                window.progressChart = new Chart(progressCtx, {
-                    type: 'line',
-                    data: {
-                        labels: progressLabels,
-                        datasets: [{
-                            label: 'Счет',
-                            data: progressData,
-                            borderColor: '#4d79ff',
-                            backgroundColor: 'rgba(77, 121, 255, 0.1)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                },
-                                ticks: {
-                                    color: '#fff'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                },
-                                ticks: {
-                                    color: '#fff'
-                                }
-                            }
-                        }
-                    }
-                });
-                
-                // График распределения по времени
-                const timeCtx = document.getElementById('timeChart').getContext('2d');
-                const time10 = gameStats.games.filter(game => game.time === 10).length;
-                const time30 = gameStats.games.filter(game => game.time === 30).length;
-                const time60 = gameStats.games.filter(game => game.time === 60).length;
-                
-                if (window.timeChart) {
-                    window.timeChart.destroy();
-                }
-                
-                window.timeChart = new Chart(timeCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['10 сек', '30 сек', '60 сек'],
-                        datasets: [{
-                            data: [time10, time30, time60],
-                            backgroundColor: [
-                                'rgba(255, 77, 77, 0.7)',
-                                'rgba(77, 121, 255, 0.7)',
-                                'rgba(76, 175, 80, 0.7)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 77, 77, 1)',
-                                'rgba(77, 121, 255, 1)',
-                                'rgba(76, 175, 80, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: '#fff'
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            // Переключение вкладок
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-                    
-                    // Убираем активный класс у всех вкладок и контента
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    // Добавляем активный класс текущей вкладке и контенту
-                    this.classList.add('active');
-                    document.getElementById(tabId + '-tab').classList.add('active');
-                    
-                    // Обновляем графики при переходе на вкладку статистики
-                    if (tabId === 'stats') {
-                        updateCharts();
+            // Установка времени игры
+            timeOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    if (!gameActive) {
+                        gameTime = parseInt(this.value);
+                        timerElement.textContent = formatTime(gameTime);
                     }
                 });
             });
@@ -772,12 +396,9 @@
                 
                 // Обработчик клика по цели
                 target.addEventListener('click', function() {
-                    totalClicks++;
-                    
                     if (gameActive) {
                         // Увеличиваем счет
                         score++;
-                        successfulClicks++;
                         scoreElement.textContent = score;
                         
                         // Удаляем цель
@@ -832,8 +453,6 @@
                 // Сброс состояния
                 gameActive = true;
                 score = 0;
-                totalClicks = 0;
-                successfulClicks = 0;
                 scoreElement.textContent = score;
                 timer = gameTime;
                 timerElement.textContent = formatTime(timer);
@@ -853,12 +472,12 @@
                 gameLoop();
                 
                 // Запуск таймера
-                const countdown = setInterval(() => {
+                countdownInterval = setInterval(() => {
                     timer--;
                     timerElement.textContent = formatTime(timer);
                     
                     if (timer <= 0) {
-                        clearInterval(countdown);
+                        clearInterval(countdownInterval);
                         endGame();
                     }
                 }, 1000);
@@ -871,40 +490,7 @@
             function endGame() {
                 gameActive = false;
                 cancelAnimationFrame(animationFrameId);
-                
-                // Расчет точности
-                const accuracy = totalClicks > 0 ? Math.round((successfulClicks / totalClicks) * 100) : 0;
-                
-                // Сохранение статистики
-                const now = new Date();
-                const gameResult = {
-                    date: now.toLocaleDateString('ru-RU'),
-                    time: gameTime,
-                    score: score,
-                    accuracy: accuracy
-                };
-                
-                gameStats.totalGames++;
-                gameStats.totalScore += score;
-                gameStats.games.push(gameResult);
-                
-                if (score > gameStats.bestScore) {
-                    gameStats.bestScore = score;
-                    gameStats.bestScoreTime = gameTime + ' сек';
-                }
-                
-                // Расчет общей точности
-                const totalSuccessful = gameStats.games.reduce((sum, game) => sum + game.score, 0);
-                const totalAttempts = gameStats.games.reduce((sum, game) => {
-                    // Оцениваем общее количество кликов на основе точности
-                    return sum + Math.round(game.score / (game.accuracy / 100));
-                }, 0);
-                
-                gameStats.accuracy = totalAttempts > 0 ? Math.round((totalSuccessful / totalAttempts) * 100) : 0;
-                
-                // Сохранение статистики
-                saveStats();
-                updateStatsDisplay();
+                clearInterval(countdownInterval);
                 
                 // Показ экрана завершения игры
                 finalScoreElement.textContent = score;
@@ -915,6 +501,7 @@
             function resetGame() {
                 gameActive = false;
                 cancelAnimationFrame(animationFrameId);
+                clearInterval(countdownInterval);
                 
                 // Сброс состояния
                 score = 0;
@@ -932,22 +519,6 @@
                 gameOverScreen.classList.remove('active');
             }
             
-            // Очистка статистики
-            clearStatsBtn.addEventListener('click', function() {
-                if (confirm('Вы уверены, что хотите очистить всю статистику?')) {
-                    gameStats = {
-                        totalGames: 0,
-                        bestScore: 0,
-                        bestScoreTime: '',
-                        totalScore: 0,
-                        games: [],
-                        accuracy: 0
-                    };
-                    saveStats();
-                    updateStatsDisplay();
-                }
-            });
-            
             // Назначение обработчиков событий
             startBtn.addEventListener('click', startGame);
             resetBtn.addEventListener('click', resetGame);
@@ -955,9 +526,6 @@
             
             // Инициализация таймера
             timerElement.textContent = formatTime(gameTime);
-            
-            // Загрузка статистики
-            loadStats();
         });
     </script>
 </body>
