@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реактор - Аркада на реакцию</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a5b1c2;
+            margin-bottom: 20px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #a5b1c2;
+        }
+        
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .player {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #4ecdc4;
+            top: 35px;
+            left: 35px;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.7);
+            transition: transform 0.1s;
+        }
+        
+        .block {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .block.red {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+        
+        .block.blue {
+            background: linear-gradient(135deg, #45b7d1, #3498db);
+        }
+        
+        .block.green {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        .block.yellow {
+            background: linear-gradient(135deg, #feca57, #f39c12);
+        }
+        
+        .block.bomb {
+            background: linear-gradient(135deg, #2d3436, #636e72);
+            color: white;
+        }
+        
+        .block.rainbow {
+            background: linear-gradient(135deg, #ff9ff3, #f368e0, #ff6b6b, #ee5a52, #feca57, #ff9f43, #2ecc71, #10ac84, #45b7d1, #3498db);
+            background-size: 400% 400%;
+            animation: rainbow 3s ease infinite;
+        }
+        
+        @keyframes rainbow {
+            0% { background-position: 0% 50% }
+            50% { background-position: 100% 50% }
+            100% { background-position: 0% 50% }
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #startBtn {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+        
+        #startBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(78, 205, 196, 0.4);
+        }
+        
+        #pauseBtn {
+            background: linear-gradient(135deg, #feca57, #ff9f43);
+            color: white;
+        }
+        
+        #pauseBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(254, 202, 87, 0.4);
+        }
+        
+        #resetBtn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        
+        #resetBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .instructions h2 {
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
+        
+        .instructions ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .instructions li:before {
+            content: "•";
+            color: #4ecdc4;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+        
+        .block-types {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .block-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .block-preview {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        .game-over, .pause-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 20px;
+        }
+        
+        .game-over h2, .pause-screen h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+        }
+        
+        .pause-screen h2 {
+            color: #feca57;
+        }
+        
+        .final-score {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #4ecdc4;
+        }
+        
+        .leaderboard {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .leaderboard h2 {
+            margin-bottom: 15px;
+            color: #4ecdc4;
+            text-align: center;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            color: #4ecdc4;
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .game-area {
+                height: 400px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .game-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .stats {
+                justify-content: space-around;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>РЕАКТОР</h1>
+        <p class="subtitle">Аркада на реакцию - Нажимай пробел, когда шарик совпадает с цветом блока!</p>
+    </header>
+    
+    <div class="container">
+        <div class="game-info">
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-label">ОЧКИ</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="lives">3</div>
+                    <div class="stat-label">ЖИЗНИ</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="level">1</div>
+                    <div class="stat-label">УРОВЕНЬ</div>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="combo">1x</div>
+                    <div class="stat-label">КОМБО</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="speed">1.0x</div>
+                    <div class="stat-label">СКОРОСТЬ</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="center-circle">
+                <div class="player"></div>
+            </div>
+            <!-- Блоки будут добавляться динамически -->
+            
+            <div id="gameOverScreen" class="game-over hidden">
+                <h2>ИГРА ОКОНЧЕНА</h2>
+                <div class="final-score">Ваш счет: <span id="finalScore">0</span></div>
+                <button id="restartBtn">Играть снова</button>
+            </div>
+            
+            <div id="pauseScreen" class="pause-screen hidden">
+                <h2>ПАУЗА</h2>
+                <button id="resumeBtn">Продолжить</button>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="startBtn">Начать игру</button>
+            <button id="pauseBtn">Пауза</button>
+            <button id="resetBtn">Сброс</button>
+        </div>
+        
+        <div class="instructions">
+            <h2>Как играть:</h2>
+            <ul>
+                <li>Шарик вращается вокруг центра. Нажимай ПРОБЕЛ, когда шарик находится напротив блока того же цвета.</li>
+                <li>Если цвет не совпал или промахнулся - теряешь жизнь.</li>
+                <li>Темп постепенно нарастает, добавляются новые типы блоков.</li>
+                <li>Собери комбо для большего количества очков!</li>
+            </ul>
+            
+            <div class="block-types">
+                <div class="block-type">
+                    <div class="block-preview red"></div>
+                    <span>Обычный блок - нажми, когда цвет совпадает</span>
+                </div>
+                <div class="block-type">
+                    <div class="block-preview bomb"></div>
+                    <span>Бомба - не нажимай!</span>
+                </div>
+                <div class="block-type">
+                    <div class="block-preview rainbow"></div>
+                    <span>Радужный - подходит к любому цвету</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="leaderboard">
+            <h2>Таблица лидеров</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Место</th>
+                        <th>Игрок</th>
+                        <th>Счет</th>
+                        <th>Уровень</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <tr>
+                        <td>1</td>
+                        <td>Профи</td>
+                        <td>1250</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Мастер</td>
+                        <td>980</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Новичок</td>
+                        <td>650</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Ты?</td>
+                        <td>0</td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const gameArea = document.querySelector('.game-area');
+        const player = document.querySelector('.player');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const levelElement = document.getElementById('level');
+        const comboElement = document.getElementById('combo');
+        const speedElement = document.getElementById('speed');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const pauseScreen = document.getElementById('pauseScreen');
+        const finalScoreElement = document.getElementById('finalScore');
+        
+        // Игровые переменные
+        let gameState = {
+            score: 0,
+            lives: 3,
+            level: 1,
+            combo: 1,
+            speed: 1.0,
+            isRunning: false,
+            isPaused: false,
+            playerAngle: 0,
+            blocks: [],
+            lastBlockTime: 0,
+            blockInterval: 2000,
+            colors: ['red', 'blue', 'green', 'yellow'],
+            animationId: null
+        };
+        
+        // Инициализация игры
+        function initGame() {
+            gameState = {
+                score: 0,
+                lives: 3,
+                level: 1,
+                combo: 1,
+                speed: 1.0,
+                isRunning: false,
+                isPaused: false,
+                playerAngle: 0,
+                blocks: [],
+                lastBlockTime: 0,
+                blockInterval: 2000,
+                colors: ['red', 'blue', 'green', 'yellow']
+            };
+            
+            updateUI();
+            clearBlocks();
+            gameOverScreen.classList.add('hidden');
+            pauseScreen.classList.add('hidden');
+        }
+        
+        // Обновление интерфейса
+        function updateUI() {
+            scoreElement.textContent = gameState.score;
+            livesElement.textContent = gameState.lives;
+            levelElement.textContent = gameState.level;
+            comboElement.textContent = `${gameState.combo}x`;
+            speedElement.textContent = `${gameState.speed.toFixed(1)}x`;
+        }
+        
+        // Очистка блоков
+        function clearBlocks() {
+            const blocks = document.querySelectorAll('.block');
+            blocks.forEach(block => block.remove());
+            gameState.blocks = [];
+        }
+        
+        // Запуск игры
+        function startGame() {
+            if (gameState.isRunning) return;
+            
+            gameState.isRunning = true;
+            gameState.isPaused = false;
+            gameOverScreen.classList.add('hidden');
+            pauseScreen.classList.add('hidden');
+            
+            gameLoop();
+        }
+        
+        // Пауза игры
+        function pauseGame() {
+            if (!gameState.isRunning || gameState.isPaused) return;
+            
+            gameState.isPaused = true;
+            pauseScreen.classList.remove('hidden');
+        }
+        
+        // Продолжить игру
+        function resumeGame() {
+            if (!gameState.isRunning || !gameState.isPaused) return;
+            
+            gameState.isPaused = false;
+            pauseScreen.classList.add('hidden');
+            gameLoop();
+        }
+        
+        // Сброс игры
+        function resetGame() {
+            cancelAnimationFrame(gameState.animationId);
+            initGame();
+        }
+        
+        // Игровой цикл
+        function gameLoop() {
+            if (!gameState.isRunning || gameState.isPaused) return;
+            
+            // Обновление позиции игрока
+            gameState.playerAngle += 0.02 * gameState.speed;
+            const radius = 150;
+            const centerX = gameArea.offsetWidth / 2;
+            const centerY = gameArea.offsetHeight / 2;
+            
+            const playerX = centerX + radius * Math.cos(gameState.playerAngle) - 15;
+            const playerY = centerY + radius * Math.sin(gameState.playerAngle) - 15;
+            
+            player.style.transform = `translate(${playerX}px, ${playerY}px)`;
+            
+            // Создание новых блоков
+            const currentTime = Date.now();
+            if (currentTime - gameState.lastBlockTime > gameState.blockInterval / gameState.speed) {
+                createBlock();
+                gameState.lastBlockTime = currentTime;
+            }
+            
+            // Обновление блоков
+            updateBlocks();
+            
+            // Проверка условий уровня
+            checkLevelUp();
+            
+            gameState.animationId = requestAnimationFrame(gameLoop);
+        }
+        
+        // Создание блока
+        function createBlock() {
+            const blockTypes = [
+                { type: 'normal', weight: 70 },
+                { type: 'bomb', weight: 15 },
+                { type: 'rainbow', weight: 15 }
+            ];
+            
+            // Выбор типа блока на основе весов
+            let randomValue = Math.random() * 100;
+            let selectedType = 'normal';
+            
+            for (const type of blockTypes) {
+                if (randomValue < type.weight) {
+                    selectedType = type.type;
+                    break;
+                }
+                randomValue -= type.weight;
+            }
+            
+            // Выбор цвета для обычного блока
+            let color = gameState.colors[Math.floor(Math.random() * gameState.colors.length)];
+            if (selectedType === 'bomb') color = 'bomb';
+            if (selectedType === 'rainbow') color = 'rainbow';
+            
+            // Создание элемента блока
+            const block = document.createElement('div');
+            block.className = `block ${color}`;
+            
+            // Определение стороны появления
+            const side = Math.floor(Math.random() * 4); // 0: верх, 1: право, 2: низ, 3: лево
+            let x, y;
+            
+            switch(side) {
+                case 0: // верх
+                    x = Math.random() * (gameArea.offsetWidth - 40);
+                    y = -40;
+                    break;
+                case 1: // право
+                    x = gameArea.offsetWidth;
+                    y = Math.random() * (gameArea.offsetHeight - 40);
+                    break;
+                case 2: // низ
+                    x = Math.random() * (gameArea.offsetWidth - 40);
+                    y = gameArea.offsetHeight;
+                    break;
+                case 3: // лево
+                    x = -40;
+                    y = Math.random() * (gameArea.offsetHeight - 40);
+                    break;
+            }
+            
+            block.style.left = `${x}px`;
+            block.style.top = `${y}px`;
+            
+            // Направление движения к центру
+            const centerX = gameArea.offsetWidth / 2;
+            const centerY = gameArea.offsetHeight / 2;
+            const angle = Math.atan2(centerY - y, centerX - x);
+            
+            // Сохранение данных блока
+            const blockData = {
+                element: block,
+                x: x,
+                y: y,
+                angle: angle,
+                speed: 2 * gameState.speed,
+                color: color,
+                type: selectedType
+            };
+            
+            gameState.blocks.push(blockData);
+            gameArea.appendChild(block);
+        }
+        
+        // Обновление блоков
+        function updateBlocks() {
+            const centerX = gameArea.offsetWidth / 2;
+            const centerY = gameArea.offsetHeight / 2;
+            const playerRadius = 150;
+            const playerX = centerX + playerRadius * Math.cos(gameState.playerAngle);
+            const playerY = centerY + playerRadius * Math.sin(gameState.playerAngle);
+            
+            for (let i = gameState.blocks.length - 1; i >= 0; i--) {
+                const block = gameState.blocks[i];
+                
+                // Перемещение блока
+                block.x += Math.cos(block.angle) * block.speed;
+                block.y += Math.sin(block.angle) * block.speed;
+                
+                block.element.style.left = `${block.x}px`;
+                block.element.style.top = `${block.y}px`;
+                
+                // Проверка столкновения с игроком
+                const dx = playerX - (block.x + 20);
+                const dy = playerY - (block.y + 20);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 35) { // Столкновение
+                    handleCollision(block, i);
+                }
+                
+                // Удаление блоков, вышедших за пределы
+                if (block.x < -100 || block.x > gameArea.offsetWidth + 100 || 
+                    block.y < -100 || block.y > gameArea.offsetHeight + 100) {
+                    block.element.remove();
+                    gameState.blocks.splice(i, 1);
+                }
+            }
+        }
+        
+        // Обработка столкновения
+        function handleCollision(block, index) {
+            // Определение цвета игрока (просто берем угол и преобразуем в цвет)
+            const playerColorIndex = Math.floor((gameState.playerAngle / (2 * Math.PI)) * 4) % 4;
+            const playerColor = gameState.colors[playerColorIndex];
+            
+            let isCorrect = false;
+            
+            if (block.type === 'bomb') {
+                // Бомба - всегда неправильно
+                isCorrect = false;
+            } else if (block.type === 'rainbow') {
+                // Радужный блок - всегда правильно
+                isCorrect = true;
+            } else {
+                // Обычный блок - проверяем соответствие цвета
+                isCorrect = block.color === playerColor;
+            }
+            
+            if (isCorrect) {
+                // Правильное попадание
+                gameState.score += 10 * gameState.combo;
+                gameState.combo = Math.min(gameState.combo + 0.2, 5);
+                
+                // Визуальный эффект
+                block.element.style.transform = 'scale(1.5)';
+                block.element.style.opacity = '0.5';
+                setTimeout(() => {
+                    if (block.element.parentNode) {
+                        block.element.remove();
+                    }
+                }, 100);
+            } else {
+                // Неправильное попадание
+                gameState.lives--;
+                gameState.combo = 1;
+                
+                // Визуальный эффект
+                block.element.style.backgroundColor = '#ff0000';
+                block.element.style.boxShadow = '0 0 20px #ff0000';
+                setTimeout(() => {
+                    if (block.element.parentNode) {
+                        block.element.remove();
+                    }
+                }, 200);
+            }
+            
+            // Удаление блока из массива
+            gameState.blocks.splice(index, 1);
+            
+            // Обновление UI
+            updateUI();
+            
+            // Проверка окончания игры
+            if (gameState.lives <= 0) {
+                endGame();
+            }
+        }
+        
+        // Проверка повышения уровня
+        function checkLevelUp() {
+            const newLevel = Math.floor(gameState.score / 200) + 1;
+            
+            if (newLevel > gameState.level) {
+                gameState.level = newLevel;
+                gameState.speed = 1 + (gameState.level - 1) * 0.2;
+                gameState.blockInterval = Math.max(500, 2000 - (gameState.level - 1) * 150);
+                updateUI();
+            }
+        }
+        
+        // Конец игры
+        function endGame() {
+            gameState.isRunning = false;
+            cancelAnimationFrame(gameState.animationId);
+            
+            finalScoreElement.textContent = gameState.score;
+            gameOverScreen.classList.remove('hidden');
+            
+            // Обновление таблицы лидеров
+            updateLeaderboard();
+        }
+        
+        // Обновление таблицы лидеров
+        function updateLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            // В реальном приложении здесь была бы логика сохранения и отображения рекордов
+            // Для демонстрации просто обновим последнюю строку
+            const lastRow = leaderboardBody.querySelector('tr:last-child');
+            lastRow.cells[2].textContent = gameState.score;
+            lastRow.cells[3].textContent = gameState.level;
+        }
+        
+        // Обработка нажатия пробела
+        function handleKeyPress(e) {
+            if (e.code === 'Space' && gameState.isRunning && !gameState.isPaused) {
+                // В реальной игре здесь будет проверка столкновения с блоками
+                // В нашей реализации столкновение проверяется автоматически в игровом цикле
+                e.preventDefault();
+            }
+        }
+        
+        // Назначение обработчиков событий
+        startBtn.addEventListener('click', startGame);
+        pauseBtn.addEventListener('click', pauseGame);
+        resetBtn.addEventListener('click', resetGame);
+        restartBtn.addEventListener('click', () => {
+            initGame();
+            startGame();
+        });
+        resumeBtn.addEventListener('click', resumeGame);
+        document.addEventListener('keydown', handleKeyPress);
+        
+        // Инициализация игры при загрузке
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>
